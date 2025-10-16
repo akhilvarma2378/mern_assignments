@@ -19,4 +19,4 @@ function calculateTime(n) {
     return 0.01;
 }
 
-calculateTime(100000000000000000000000000000000000)
+calculateTime(1000000)
