@@ -9,5 +9,14 @@ There is no automated test for this one, this is more for you to understand time
 */
 
 function calculateTime(n) {
+    currentDate = new Date();
+    currentTime = currentDate.getTime();
+    console.log(currentTime);
+    sum = (n*(n+1))/2
+    afterTime = new Date().getTime();
+    console.log(afterTime);
+    console.log("Time taken to execute:",afterTime-currentTime);
     return 0.01;
 }
+
+calculateTime(100000000000000000000000000000000000)
