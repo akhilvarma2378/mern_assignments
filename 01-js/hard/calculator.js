@@ -16,6 +16,69 @@
   Once you've implemented the logic, test your code by running
 */
 
-class Calculator {}
+const mathjs = require('mathjs')
+
+class Calculator 
+{
+    constructor()
+    {
+      this.result = 0;
+    }
+    add(x)
+    {
+      this.result += x;
+    }
+    subtract(x)
+    {
+      this.result -= x;
+    }
+    multiply(x)
+    {
+      this.result *= x;
+    }
+    divide(x)
+    { 
+      if(x === 0 || x === -Infinity || x === Infinity)
+        throw new Error("Can not divisble by Zero")
+      this.result /= x;
+    }
+    clear()
+    {
+      this.result = 0;
+    }
+    getResult()
+    {
+      return this.result;
+    }
+    calculate(str)
+    {
+       let strnew = str.split("").filter(function(ele){
+        if("0123456789+-*/()eE .".includes(ele))
+          {
+            return true;
+          }
+        else{
+          throw new Error("Error");
+        }
+       }).join("");
+
+    if (strnew.includes(" / 0")) { 
+      throw new Error("Cannot divide by zero");
+    }
+
+      try{
+        this.result = mathjs.evaluate(strnew);
+      }catch(error){
+        throw new Error("error evaluating");
+        
+      }
+
+      if(isNaN(this.result))
+      {
+        throw new Error("result is Nan");
+      }
+     return this.result;
+    }
+}
 
 module.exports = Calculator;
