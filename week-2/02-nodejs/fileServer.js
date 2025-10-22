@@ -36,10 +36,10 @@ app.get("/file/:filename",(req,res)=>{
 })
 
 app.all("*",(req,res)=>{
-    res.status(404).json({"message":"Route not found"})
+    res.status(404).send("No Route")
 })
 
 console.log("app running")
 app.listen(2000);
 
-// module.exports = app;
+module.exports = app;

@@ -40,10 +40,109 @@
   Testing the server - run `npm run test-todoServer` command in terminal
  */
   const express = require('express');
+  const fs = require("fs");
   const bodyParser = require('body-parser');
   
   const app = express();
   
   app.use(bodyParser.json());
+
+  function findByIndex(id, todos){
+    return todos.find((ele)=>{
+      return ele["id"] == id;
+    })
+  }
+
+  app.get("/todos",(req,res)=>{
+    fs.readFile("todos.json","utf-8",(err,data)=>{
+      let response = JSON.parse(data);
+      res.status(200).json(response);
+    })
+  })
+
+  app.get("/todos/:id",(req,res)=>{
+    fs.readFile("todos.json","utf-8",(err,data)=>{
+      let response = JSON.parse(data); 
+      let id = req.params.id;
+      let result = findByIndex(id,response);
+      if(result.length < 1)
+      {
+        res.status(404).send("Not Found");
+      }
+      res.status(200).json(result);
+    })
+  })
+
+  app.post("/todos",(req,res)=>{
+    const newTodo = {
+      id : Math.floor(Math.random()*100000),
+      title : req.body.title,
+      completed : req.body.completed,
+      description : req.body.description
+    }
+    fs.readFile("todos.json","utf-8",(err,data)=>{
+      let response = JSON.parse(data);
+      response.push(newTodo);
+      fs.writeFile("todos.json",JSON.stringify(response),"utf-8",(err)=>{
+        if (err) throw err;
+        res.status(201).json(newTodo);
+      })
+    })
+  })
+
+      
+  // 4. PUT /todos/:id - Update an existing todo item by ID
+  //   Description: Updates an existing todo item identified by its ID.
+  //   Request Body: JSON object representing the updated todo item.
+  //   Response: 200 OK if the todo item was found and updated, or 404 Not Found if not found.
+  //   Example: PUT http://localhost:3000/todos/123
+  //   Request Body: { "title": "Buy groceries", "completed": true }
+
+  app.put("/todos/:id",(req,res)=>{
+    fs.readFile("todos.json","utf-8",(err,data)=>{
+      let response = JSON.parse(data);
+      let id = req.params.id;
+      let result = response.findIndex((ele)=>ele["id"] === parseInt(req.params.id));
+      if(result === -1)
+      {
+        res.status(404).send("Not Found");
+      }
+      response[result].title = req.body.title;
+      response[result].completed = req.body.completed;
+      response[result].description = req.body.description;
+      fs.writeFile("todos.json",JSON.stringify(response),"utf-8",(err)=>{
+        if(err) throw err;
+         res.status(200).send("Updated");
+      })
+    })
+  })
+  
+    // 5. DELETE /todos/:id - Delete a todo item by ID
+    // Description: Deletes a todo item identified by its ID.
+    // Response: 200 OK if the todo item was found and deleted, or 404 Not Found if not found.
+    // Example: DELETE http://localhost:3000/todos/123
+
+  app.delete("/todos/:id",(req,res)=>{
+    fs.readFile("todos.json","utf-8",(err,data)=>{
+      let response = JSON.parse(data);
+      let id = req.params.id;
+      let result = response.findIndex((ele)=>ele["id"] === parseInt(req.params.id));
+      if(result === -1)
+      {
+        res.status(404).send("Not Found");
+      }
+      response.splice(result,1);
+      fs.writeFile("todos.json",JSON.stringify(response),"utf-8",(err)=>{
+        if(err) throw err;
+         res.status(200).send("Deleted");
+      })
+    })
+  })
+
+  app.all("*",(req,res)=>{
+    res.status(404).send("No Route")
+  })
+
+  app.listen(2000);
   
   module.exports = app;
